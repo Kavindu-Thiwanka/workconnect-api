@@ -9,9 +9,11 @@ import com.kt.workconnect.repository.JobRepository;
 import com.kt.workconnect.repository.UserRepository;
 import com.kt.workconnect.service.ApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -41,5 +43,21 @@ public class ApplicationServiceImpl implements ApplicationService {
         newApplication.setJob(job);
 
         return applicationRepository.save(newApplication);
+    }
+
+    @Override
+    public List<JobApplication> getApplicationsForJob(UUID jobId, String employerEmail) throws AccessDeniedException {
+        User employer = userRepository.findByEmail(employerEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + employerEmail));
+
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new IllegalArgumentException("Job not found with ID: " + jobId));
+
+        // Security Check: Ensure the user requesting the applications is the one who posted the job
+        if (!job.getPostedBy().getId().equals(employer.getId())) {
+            throw new AccessDeniedException("You are not authorized to view applications for this job.");
+        }
+
+        return applicationRepository.findByJob(job);
     }
 }

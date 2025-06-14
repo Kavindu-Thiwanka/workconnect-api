@@ -39,4 +39,10 @@ public class JobController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/my-jobs")
+    public ResponseEntity<List<Job>> getMyPostedJobs(@AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("email");
+        return ResponseEntity.ok(jobService.getJobsByEmployer(email));
+    }
 }

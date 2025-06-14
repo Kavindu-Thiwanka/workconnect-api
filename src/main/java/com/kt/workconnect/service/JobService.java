@@ -10,4 +10,5 @@ public interface JobService {
     Job createJob(JobDTO jobDTO, String employerEmail);
     Optional<Job> getJobById(UUID jobId);
     List<Job> getAllJobs();
+    List<Job> getJobsByEmployer(String employerEmail);
 }
