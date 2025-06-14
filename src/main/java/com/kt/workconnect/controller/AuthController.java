@@ -1,6 +1,6 @@
 package com.kt.workconnect.controller;
 
-import com.kt.workconnect.dto.RegisterRequest;
+import com.kt.workconnect.dto.RegisterRequestDTO;
 import com.kt.workconnect.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
-        return authService.registerUser(registerRequest);
+    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO registerRequestDTO) {
+        return authService.registerUser(registerRequestDTO);
     }
 }

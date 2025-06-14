@@ -1,9 +1,9 @@
 package com.kt.workconnect.service;
 
-import com.kt.workconnect.dto.RegisterRequest;
+import com.kt.workconnect.dto.RegisterRequestDTO;
 import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
 
-    ResponseEntity<?> registerUser(RegisterRequest registerRequest);
+    ResponseEntity<?> registerUser(RegisterRequestDTO registerRequestDTO);
 }
