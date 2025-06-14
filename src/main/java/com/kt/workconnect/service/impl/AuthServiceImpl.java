@@ -1,6 +1,6 @@
 package com.kt.workconnect.service.impl;
 
-import com.kt.workconnect.dto.RegisterRequest;
+import com.kt.workconnect.dto.RegisterRequestDTO;
 import com.kt.workconnect.entity.User;
 import com.kt.workconnect.repository.UserRepository;
 import com.kt.workconnect.service.AuthService;
@@ -39,20 +39,20 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<?> registerUser(RegisterRequest registerRequest) {
+    public ResponseEntity<?> registerUser(RegisterRequestDTO registerRequestDTO) {
         try {
             List<AttributeType> userAttrs = new ArrayList<>();
-            userAttrs.add(AttributeType.builder().name("email").value(registerRequest.getEmail()).build());
-            userAttrs.add(AttributeType.builder().name("given_name").value(registerRequest.getFirstName()).build());
-            userAttrs.add(AttributeType.builder().name("family_name").value(registerRequest.getLastName()).build());
-            userAttrs.add(AttributeType.builder().name("custom:user_role").value(registerRequest.getUserRole().name()).build());
+            userAttrs.add(AttributeType.builder().name("email").value(registerRequestDTO.getEmail()).build());
+            userAttrs.add(AttributeType.builder().name("given_name").value(registerRequestDTO.getFirstName()).build());
+            userAttrs.add(AttributeType.builder().name("family_name").value(registerRequestDTO.getLastName()).build());
+            userAttrs.add(AttributeType.builder().name("custom:user_role").value(registerRequestDTO.getUserRole().name()).build());
 
-            String secretHash = calculateSecretHash(registerRequest.getEmail(), appClientId, appClientSecret);
+            String secretHash = calculateSecretHash(registerRequestDTO.getEmail(), appClientId, appClientSecret);
 
             SignUpRequest signUpRequest = SignUpRequest.builder()
                     .clientId(appClientId)
-                    .username(registerRequest.getEmail())
-                    .password(registerRequest.getPassword())
+                    .username(registerRequestDTO.getEmail())
+                    .password(registerRequestDTO.getPassword())
                     .userAttributes(userAttrs)
                     .secretHash(secretHash)
                     .build();
@@ -62,8 +62,8 @@ public class AuthServiceImpl implements AuthService {
 
             User newUser = new User();
             newUser.setCognitoSub(cognitoSub);
-            newUser.setEmail(registerRequest.getEmail());
-            newUser.setUserRole(registerRequest.getUserRole());
+            newUser.setEmail(registerRequestDTO.getEmail());
+            newUser.setUserRole(registerRequestDTO.getUserRole());
             userRepository.save(newUser);
 
             return ResponseEntity.ok(newUser);

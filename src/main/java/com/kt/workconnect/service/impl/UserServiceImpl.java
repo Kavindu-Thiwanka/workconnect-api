@@ -1,6 +1,6 @@
 package com.kt.workconnect.service.impl;
 
-import com.kt.workconnect.dto.UserProfileResponse;
+import com.kt.workconnect.dto.UserProfileResponseDTO;
 import com.kt.workconnect.entity.User;
 import com.kt.workconnect.repository.UserRepository;
 import com.kt.workconnect.service.UserService;
@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        UserProfileResponse profile = UserProfileResponse.builder()
+        UserProfileResponseDTO profile = UserProfileResponseDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .userRole(user.getUserRole())

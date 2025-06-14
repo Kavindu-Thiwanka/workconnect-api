@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Data
 @Builder
-public class UserProfileResponse {
+public class UserProfileResponseDTO {
     private UUID id;
     private String email;
     private UserRole userRole;
