@@ -45,4 +45,15 @@ public class JobController {
         String email = jwt.getClaimAsString("email");
         return ResponseEntity.ok(jobService.getJobsByEmployer(email));
     }
+
+    @GetMapping("/recommendations")
+    public ResponseEntity<?> getRecommendedJobs(@AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("email");
+        try {
+            List<Job> recommendedJobs = jobService.getRecommendedJobs(email);
+            return ResponseEntity.ok(recommendedJobs);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
