@@ -34,8 +34,8 @@ public class AuthServiceImpl implements AuthService {
     @Value("${aws.cognito.appClientId}")
     private String appClientId;
 
-    @Value("${aws.cognito.appClientSecret}")
-    private String appClientSecret;
+//    @Value("${aws.cognito.appClientSecret}")
+//    private String appClientSecret;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -47,14 +47,14 @@ public class AuthServiceImpl implements AuthService {
             userAttrs.add(AttributeType.builder().name("family_name").value(registerRequestDTO.getLastName()).build());
             userAttrs.add(AttributeType.builder().name("custom:user_role").value(registerRequestDTO.getUserRole().name()).build());
 
-            String secretHash = calculateSecretHash(registerRequestDTO.getEmail(), appClientId, appClientSecret);
+//            String secretHash = calculateSecretHash(registerRequest.getEmail(), appClientId, appClientSecret);
 
             SignUpRequest signUpRequest = SignUpRequest.builder()
                     .clientId(appClientId)
                     .username(registerRequestDTO.getEmail())
                     .password(registerRequestDTO.getPassword())
                     .userAttributes(userAttrs)
-                    .secretHash(secretHash)
+//                    .secretHash(secretHash)
                     .build();
 
             SignUpResponse signUpResponse = cognitoClient.signUp(signUpRequest);
