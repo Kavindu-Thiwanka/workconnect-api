@@ -1,0 +1,24 @@
+# ---------------------------------------------------- #
+# ---------------- DEVELOPMENT PROFILE --------------- #
+# ---------------------------------------------------- #
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/work_connect
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_tg253kG78
+aws:
+  cognito:
+    userPoolId: ap-south-1_tg253kG78
+    appClientId: 447pkum25ou2q4n9ebfo5iun7n
+    appClientSecret: 1eeuet6s1ufa0gv94b4uepkqo2n9cl8fp1ga510o9jolgjlc6cs4
+    region: ap-south-1

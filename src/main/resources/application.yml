@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: work-connect-api
+
+  # Set 'dev' as the default profile if no other profile is specified
+  profiles:
+    active: dev
+
+  # Common JPA properties (can be overridden by profiles)
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
