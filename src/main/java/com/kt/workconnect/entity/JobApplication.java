@@ -3,6 +3,7 @@ package com.kt.workconnect.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -27,6 +28,7 @@ public class JobApplication {
     @Column(name = "applied_at", updatable = false)
     private LocalDateTime appliedAt;
 
-    // You can add a status field later (e.g., PENDING, VIEWED, ACCEPTED)
-    // private String status;
+    //     You can add a status field later (e.g., PENDING, VIEWED, ACCEPTED)
+    @Column(name = "status", nullable = false)
+    private String status;
 }
