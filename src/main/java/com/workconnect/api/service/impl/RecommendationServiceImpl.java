@@ -9,6 +9,7 @@ import com.workconnect.api.repository.UserRepository;
 import com.workconnect.api.service.JobService;
 import com.workconnect.api.service.RecommendationService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -37,14 +38,23 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
     public List<JobListingDto> getJobRecommendations(String workerEmail) {
-        User worker = userRepository.findByEmail(workerEmail).orElseThrow();
+        // 1. Get worker profile
+        User worker = userRepository.findByEmail(workerEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + workerEmail));
         if (!(worker.getProfile() instanceof WorkerProfile)) {
-            return List.of();
+            return List.of(); // Not a worker
         }
         WorkerProfile workerProfile = (WorkerProfile) worker.getProfile();
-        // Handle case where skills might be null
-        String skills = workerProfile.getSkills() != null ? workerProfile.getSkills() : "";
-        AiWorkerProfileDto workerPayload = new AiWorkerProfileDto(skills);
+
+        // Convert the Set<Skill> into a single space-separated string
+        String skillsString = "";
+        if (workerProfile.getSkills() != null && !workerProfile.getSkills().isEmpty()) {
+            skillsString = workerProfile.getSkills().stream()
+                    .map(Skill::getName)
+                    .collect(Collectors.joining(" "));
+        }
+
+        AiWorkerProfileDto workerPayload = new AiWorkerProfileDto(skillsString);
 
         // Get all open job postings
         List<JobPosting> openJobs = jobPostingRepository.findByStatus(JobStatus.OPEN);
@@ -62,7 +72,7 @@ public class RecommendationServiceImpl implements RecommendationService {
             return List.of();
         }
 
-        // Fetch the full job objects for the recommended IDs
+        // Fetch and map the recommended jobs in the correct order
         List<Long> rankedJobIds = response.ranked_job_ids();
         List<JobPosting> recommendedJobs = jobPostingRepository.findAllById(rankedJobIds);
 
