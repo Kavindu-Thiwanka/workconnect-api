@@ -1,0 +1,99 @@
+# ===================================================================
+# COMMON PROPERTIES (Applied to all profiles)
+# ===================================================================
+spring:
+  application:
+    name: workconnect-api
+  # Sets 'dev' as the default profile if no other is specified.
+  profiles:
+    active: dev
+
+# ===================================================================
+# DEVELOPMENT PROFILE (for local development)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/workconnect_db
+    username: postgres
+    password: 1234
+
+  jpa:
+    hibernate:
+      # 'update' automatically modifies the database schema based on entity changes.
+      # Perfect for development, but unsafe for production.
+      ddl-auto: update
+    show-sql: true # Shows Hibernate-generated SQL in the console.
+
+logging:
+  level:
+    # Set to DEBUG for detailed logs during development.
+    com.workconnect.api: DEBUG
+
+server:
+  port: 8080
+
+# ===================================================================
+# TESTING PROFILE (for automated integration tests)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: testing
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/workconnect_test_db
+    username: postgres
+    password: password
+
+  jpa:
+    hibernate:
+      # 'create-drop' creates the schema on startup and drops it on shutdown.
+      # This ensures tests run against a clean, predictable database.
+      ddl-auto: none
+    show-sql: false
+
+logging:
+  level:
+    # Set to INFO to reduce log noise during tests.
+    com.workconnect.api: INFO
+
+server:
+  port: 8081 # Use a different port to avoid conflicts with the dev server.
+
+# ===================================================================
+# PRODUCTION PROFILE (for the live environment)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    # CRITICAL: Use environment variables for production credentials.
+    # NEVER hardcode production secrets in your source code.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+
+  jpa:
+    hibernate:
+      # 'validate' checks if the table schema matches your entities on startup.
+      # It's a safe setting for production that prevents accidental data loss.
+      # NEVER use 'update' or 'create' in production.
+      ddl-auto: validate
+    show-sql: false
+
+logging:
+  level:
+    # Set to WARN to only log significant issues in production.
+    com.workconnect.api: WARN
+
+server:
+  port: 8080
