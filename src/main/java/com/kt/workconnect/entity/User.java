@@ -28,7 +28,7 @@ public class User {
     @Column(name = "user_role", nullable = false)
     private UserRole userRole;
 
-    @Column(name = "complete_profile", nullable = false)
+    @Column(name = "complete_profile", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean completeProfile = Boolean.FALSE;
 
     @CreationTimestamp
