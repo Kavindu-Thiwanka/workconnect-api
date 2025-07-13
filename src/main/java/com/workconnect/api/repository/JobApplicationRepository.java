@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface JobApplicationRepository extends JpaRepository<JobApplication, Long> {
 
-    boolean existsByWorker_IdAndJobPosting_Id(Long workerId, Long jobId);
+    boolean existsByWorker_UserIdAndJobPosting_Id(Long workerId, Long jobId);
 
     List<JobApplication> findByJobPosting_Id(Long jobId);
 }

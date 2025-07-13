@@ -139,7 +139,7 @@ public class JobServiceImpl implements JobService {
         if (job.getStatus() != JobStatus.OPEN) {
             throw new IllegalStateException("This job is no longer open for applications.");
         }
-        if (jobApplicationRepository.existsByWorker_IdAndJobPosting_Id(worker.getUserId(), jobId)) {
+        if (jobApplicationRepository.existsByWorker_UserIdAndJobPosting_Id(worker.getUserId(), jobId)) {
             throw new IllegalStateException("You have already applied for this job.");
         }
 
