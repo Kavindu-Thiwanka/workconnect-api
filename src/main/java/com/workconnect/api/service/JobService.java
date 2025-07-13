@@ -5,6 +5,7 @@ import com.workconnect.api.dto.CreateJobRequestDto;
 import com.workconnect.api.dto.JobApplicationDto;
 import com.workconnect.api.dto.JobDetailDto;
 import com.workconnect.api.dto.JobListingDto;
+import com.workconnect.api.entity.JobApplication;
 import com.workconnect.api.entity.JobPosting;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public interface JobService {
 
     List<JobApplicationDto> getApplicationsForJob(String employerEmail, Long jobId);
 
-    void updateApplicationStatus(String employerEmail, Long applicationId, JobApplicationStatus status);
+    JobApplication updateApplicationStatus(String employerEmail, Long applicationId, JobApplicationStatus status);
 
     JobListingDto mapToJobListingDto(JobPosting job);
 }

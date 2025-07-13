@@ -169,7 +169,7 @@ public class JobServiceImpl implements JobService {
 
     @Transactional
     @Override
-    public void updateApplicationStatus(String employerEmail, Long applicationId, JobApplicationStatus status) {
+    public JobApplication updateApplicationStatus(String employerEmail, Long applicationId, JobApplicationStatus status) {
         JobApplication application = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Application not found"));
 
@@ -179,6 +179,8 @@ public class JobServiceImpl implements JobService {
 
         application.setStatus(status);
         jobApplicationRepository.save(application);
+
+        return application;
     }
 
     private JobApplicationDto mapToJobApplicationDto(JobApplication application) {

@@ -1,7 +1,10 @@
 package com.workconnect.api.controller;
 
+import com.workconnect.api.constants.Enum.JobApplicationStatus;
 import com.workconnect.api.dto.JobApplicationDto;
 import com.workconnect.api.dto.UpdateApplicationStatusDto;
+import com.workconnect.api.entity.JobApplication;
+import com.workconnect.api.service.BadgeService;
 import com.workconnect.api.service.JobService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +20,11 @@ import java.util.List;
 public class EmployerController {
 
     private final JobService jobService;
+    private final BadgeService badgeService;
 
-    public EmployerController(JobService jobService) {
+    public EmployerController(JobService jobService, BadgeService badgeService) {
         this.jobService = jobService;
+        this.badgeService = badgeService;
     }
 
     @GetMapping("/jobs/{jobId}/applications")
@@ -35,7 +40,12 @@ public class EmployerController {
             @PathVariable Long applicationId,
             @Valid @RequestBody UpdateApplicationStatusDto statusDto,
             Principal principal) {
-        jobService.updateApplicationStatus(principal.getName(), applicationId, statusDto.getStatus());
+        JobApplication application = jobService.updateApplicationStatus(principal.getName(), applicationId, statusDto.getStatus());
+
+        if (application.getStatus() == JobApplicationStatus.COMPLETED) {
+            badgeService.checkAndAwardJobCompletionBadges(application.getWorker());
+        }
+
         return ResponseEntity.ok().build();
     }
 }
