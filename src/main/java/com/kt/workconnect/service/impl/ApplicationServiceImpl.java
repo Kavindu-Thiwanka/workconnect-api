@@ -60,4 +60,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         return applicationRepository.findByJob(job);
     }
+
+    @Override
+    public List<JobApplication> getAllJobApplications(String workerEmail) {
+
+        User worker = userRepository.findByEmail(workerEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + workerEmail));
+
+        return applicationRepository.findAllByApplicant(worker);
+    }
 }

@@ -42,4 +42,17 @@ public class ApplicationController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/jobs")
+    public ResponseEntity<?> getAllJobApplications(@AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("email");
+        try {
+            List<JobApplication> applications = applicationService.getAllJobApplications(email);
+            return ResponseEntity.ok(applications);
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(403).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

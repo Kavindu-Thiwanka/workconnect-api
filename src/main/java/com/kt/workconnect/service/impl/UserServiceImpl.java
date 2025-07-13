@@ -25,6 +25,7 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail())
                 .userRole(user.getUserRole())
                 .createdAt(user.getCreatedAt())
+                .completeProfile(user.getCompleteProfile())
                 .build();
 
         return ResponseEntity.ok(profile);

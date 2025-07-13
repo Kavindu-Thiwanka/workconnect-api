@@ -1,7 +1,9 @@
 package com.kt.workconnect.service.impl;
 
+import com.kt.workconnect.constant.Enum.UserRole;
 import com.kt.workconnect.dto.RegisterRequestDTO;
 import com.kt.workconnect.entity.User;
+import com.kt.workconnect.entity.WorkerProfile;
 import com.kt.workconnect.repository.UserRepository;
 import com.kt.workconnect.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;

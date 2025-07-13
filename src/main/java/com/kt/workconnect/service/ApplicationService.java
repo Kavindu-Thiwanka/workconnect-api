@@ -11,4 +11,6 @@ public interface ApplicationService {
     JobApplication applyForJob(UUID jobId, String applicantEmail);
 
     List<JobApplication> getApplicationsForJob(UUID jobId, String employerEmail) throws AccessDeniedException;
+
+    List<JobApplication> getAllJobApplications(String workerEmail);
 }
