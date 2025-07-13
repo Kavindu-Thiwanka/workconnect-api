@@ -1,5 +1,6 @@
 package com.workconnect.api.entity;
 
+import com.workconnect.api.constants.Enum.BadgeCriteriaType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,4 +23,11 @@ public class Badge {
     private String displayName;
     private String description;
     private String iconUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BadgeCriteriaType criteriaType;
+
+    @Column(nullable = false)
+    private double criteriaValue;
 }

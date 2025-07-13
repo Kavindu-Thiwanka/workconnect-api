@@ -43,7 +43,7 @@ public class EmployerController {
         JobApplication application = jobService.updateApplicationStatus(principal.getName(), applicationId, statusDto.getStatus());
 
         if (application.getStatus() == JobApplicationStatus.COMPLETED) {
-            badgeService.checkAndAwardJobCompletionBadges(application.getWorker());
+            badgeService.checkAndAwardBadges(application.getWorker());
         }
 
         return ResponseEntity.ok().build();

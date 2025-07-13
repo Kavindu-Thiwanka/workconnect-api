@@ -4,6 +4,7 @@ import com.workconnect.api.constants.Enum.JobApplicationStatus;
 import com.workconnect.api.dto.CreateReviewDto;
 import com.workconnect.api.entity.*;
 import com.workconnect.api.repository.*;
+import com.workconnect.api.service.BadgeService;
 import com.workconnect.api.service.ReviewService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +15,14 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final JobApplicationRepository applicationRepository;
     private final UserRepository userRepository;
+    private final BadgeService badgeService;
 
-    public ReviewServiceImpl(ReviewRepository reviewRepository, JobApplicationRepository applicationRepository, UserRepository userRepository) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository, JobApplicationRepository applicationRepository,
+                             UserRepository userRepository, BadgeService badgeService) {
         this.reviewRepository = reviewRepository;
         this.applicationRepository = applicationRepository;
         this.userRepository = userRepository;
+        this.badgeService = badgeService;
     }
 
     @Transactional
@@ -52,5 +56,7 @@ public class ReviewServiceImpl implements ReviewService {
         review.setReviewee(reviewee);
 
         reviewRepository.save(review);
+
+        badgeService.checkAndAwardBadges(reviewee);
     }
 }

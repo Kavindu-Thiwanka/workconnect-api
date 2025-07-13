@@ -4,6 +4,6 @@ import com.workconnect.api.entity.User;
 
 public interface BadgeService {
 
-    void checkAndAwardJobCompletionBadges(User worker);
+    void checkAndAwardBadges(User user);
 
 }
