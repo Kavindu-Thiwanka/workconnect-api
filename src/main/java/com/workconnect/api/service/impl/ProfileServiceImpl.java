@@ -2,23 +2,26 @@ package com.workconnect.api.service.impl;
 
 import com.workconnect.api.dto.EmployerProfileDto;
 import com.workconnect.api.dto.WorkerProfileDto;
-import com.workconnect.api.entity.EmployerProfile;
-import com.workconnect.api.entity.Profile;
-import com.workconnect.api.entity.User;
-import com.workconnect.api.entity.WorkerProfile;
+import com.workconnect.api.entity.*;
+import com.workconnect.api.repository.SkillRepository;
 import com.workconnect.api.repository.UserRepository;
 import com.workconnect.api.service.ProfileService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 public class ProfileServiceImpl implements ProfileService {
 
     private final UserRepository userRepository;
+    private final SkillRepository skillRepository;
 
-    public ProfileServiceImpl(UserRepository userRepository) {
+    public ProfileServiceImpl(UserRepository userRepository, SkillRepository skillRepository) {
         this.userRepository = userRepository;
+        this.skillRepository = skillRepository;
     }
 
     @Override
@@ -46,9 +49,18 @@ public class ProfileServiceImpl implements ProfileService {
         workerProfile.setFirstName(workerProfileDto.getFirstName());
         workerProfile.setLastName(workerProfileDto.getLastName());
         workerProfile.setLocation(workerProfileDto.getLocation());
-        workerProfile.setSkills(workerProfileDto.getSkills());
         workerProfile.setExperience(workerProfileDto.getExperience());
         workerProfile.setAvailability(workerProfileDto.getAvailability());
+
+        if (workerProfileDto.getSkills() != null) {
+            Set<Skill> skillEntities = new HashSet<>();
+            for (String skillName : workerProfileDto.getSkills()) {
+                Skill skill = skillRepository.findByNameIgnoreCase(skillName)
+                        .orElseGet(() -> skillRepository.save(new Skill(skillName)));
+                skillEntities.add(skill);
+            }
+            workerProfile.setSkills(skillEntities);
+        }
 
         userRepository.save(user);
         return mapToWorkerDto(workerProfile);
@@ -81,7 +93,11 @@ public class ProfileServiceImpl implements ProfileService {
         dto.setFirstName(profile.getFirstName());
         dto.setLastName(profile.getLastName());
         dto.setLocation(profile.getLocation());
-        dto.setSkills(profile.getSkills());
+        Set<String> skills = new HashSet<>();
+        for (Skill skill : profile.getSkills()) {
+            skills.add(skill.getName());
+        }
+        dto.setSkills(skills);
         dto.setExperience(profile.getExperience());
         dto.setAvailability(profile.getAvailability());
         return dto;
