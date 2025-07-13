@@ -77,7 +77,8 @@ public class JobServiceImpl implements JobService {
                 .collect(Collectors.toList());
     }
 
-    private JobListingDto mapToJobListingDto(JobPosting job) {
+    @Override
+    public JobListingDto mapToJobListingDto(JobPosting job) {
         JobListingDto dto = new JobListingDto();
         dto.setId(job.getId());
         dto.setJobTitle(job.getJobTitle());

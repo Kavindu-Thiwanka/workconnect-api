@@ -24,4 +24,6 @@ public interface JobService {
     List<JobApplicationDto> getApplicationsForJob(String employerEmail, Long jobId);
 
     void updateApplicationStatus(String employerEmail, Long applicationId, JobApplicationStatus status);
+
+    JobListingDto mapToJobListingDto(JobPosting job);
 }
