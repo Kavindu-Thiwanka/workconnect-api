@@ -15,10 +15,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_tg253kG78
+          issuer-uri: https://cognito-idp.ap-south-1.amazonaws.com/ap-south-1_0VsRMs5Yq
 aws:
   cognito:
-    userPoolId: ap-south-1_tg253kG78
-    appClientId: 447pkum25ou2q4n9ebfo5iun7n
+    userPoolId: ap-south-1_0VsRMs5Yq
+    appClientId: 5q80g6c5qoltrjf1ns35ll8vv7
     appClientSecret: 1eeuet6s1ufa0gv94b4uepkqo2n9cl8fp1ga510o9jolgjlc6cs4
     region: ap-south-1

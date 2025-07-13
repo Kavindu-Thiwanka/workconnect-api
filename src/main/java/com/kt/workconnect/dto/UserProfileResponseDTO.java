@@ -13,5 +13,6 @@ public class UserProfileResponseDTO {
     private UUID id;
     private String email;
     private UserRole userRole;
+    private Boolean completeProfile;
     private LocalDateTime createdAt;
 }

@@ -11,6 +11,8 @@ import com.kt.workconnect.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ProfileServiceImpl implements ProfileService {
 
@@ -23,7 +25,9 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Object createOrUpdateProfile(ProfileDTO profileDTO, User user) {
         if (user.getUserRole() == UserRole.WORKER) {
-            WorkerProfile profile = new WorkerProfile();
+            WorkerProfile profile;
+            Optional<WorkerProfile> existingProfileOpt = workerProfileRepository.findByUser(user);
+            profile = existingProfileOpt.orElseGet(WorkerProfile::new);
             profile.setUser(user);
             profile.setHeadline(profileDTO.getHeadline());
             profile.setSkills(profileDTO.getSkills());
@@ -31,7 +35,9 @@ public class ProfileServiceImpl implements ProfileService {
             profile.setAvailability(profileDTO.getAvailability());
             return workerProfileRepository.save(profile);
         } else if (user.getUserRole() == UserRole.EMPLOYER) {
-            EmployerProfile profile = new EmployerProfile();
+            EmployerProfile profile;
+            Optional<EmployerProfile> existingProfileOpt = employerProfileRepository.findByUser(user);
+            profile = existingProfileOpt.orElseGet(EmployerProfile::new);
             profile.setUser(user);
             profile.setCompanyName(profileDTO.getCompanyName());
             profile.setIndustry(profileDTO.getIndustry());

@@ -28,6 +28,9 @@ public class User {
     @Column(name = "user_role", nullable = false)
     private UserRole userRole;
 
+    @Column(name = "complete_profile", nullable = false)
+    private Boolean completeProfile = Boolean.FALSE;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

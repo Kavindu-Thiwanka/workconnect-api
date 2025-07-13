@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "employer_profiles")
+@Table(name = "employer_profile")
 public class EmployerProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
