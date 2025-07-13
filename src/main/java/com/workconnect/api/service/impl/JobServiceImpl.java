@@ -13,7 +13,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -197,7 +199,11 @@ public class JobServiceImpl implements JobService {
             WorkerProfile workerProfile = (WorkerProfile) worker.getProfile();
             applicantDto.setFirstName(workerProfile.getFirstName());
             applicantDto.setLastName(workerProfile.getLastName());
-            applicantDto.setSkills(workerProfile.getSkills());
+            Set<String> skills = new HashSet<>();
+            for (Skill skill : workerProfile.getSkills()) {
+                skills.add(skill.getName());
+            }
+            applicantDto.setSkills(skills);
         }
 
         dto.setApplicant(applicantDto);
