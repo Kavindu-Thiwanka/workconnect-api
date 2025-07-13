@@ -3,13 +3,8 @@ package com.workconnect.api.service.impl;
 import com.workconnect.api.constants.Enum.JobApplicationStatus;
 import com.workconnect.api.constants.Enum.JobStatus;
 import com.workconnect.api.constants.Enum.JobType;
-import com.workconnect.api.dto.CreateJobRequestDto;
-import com.workconnect.api.dto.JobDetailDto;
-import com.workconnect.api.dto.JobListingDto;
-import com.workconnect.api.entity.EmployerProfile;
-import com.workconnect.api.entity.JobApplication;
-import com.workconnect.api.entity.JobPosting;
-import com.workconnect.api.entity.User;
+import com.workconnect.api.dto.*;
+import com.workconnect.api.entity.*;
 import com.workconnect.api.repository.JobApplicationRepository;
 import com.workconnect.api.repository.JobPostingRepository;
 import com.workconnect.api.repository.UserRepository;
@@ -154,5 +149,55 @@ public class JobServiceImpl implements JobService {
         application.setStatus(JobApplicationStatus.PENDING);
 
         jobApplicationRepository.save(application);
+    }
+
+    @Override
+    public List<JobApplicationDto> getApplicationsForJob(String employerEmail, Long jobId) {
+        JobPosting job = jobPostingRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        if (!job.getEmployer().getEmail().equals(employerEmail)) {
+            throw new org.springframework.security.access.AccessDeniedException("You are not authorized to view applications for this job.");
+        }
+
+        List<JobApplication> applications = jobApplicationRepository.findByJobPosting_Id(jobId);
+        return applications.stream()
+                .map(this::mapToJobApplicationDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public void updateApplicationStatus(String employerEmail, Long applicationId, JobApplicationStatus status) {
+        JobApplication application = jobApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found"));
+
+        if (!application.getJobPosting().getEmployer().getEmail().equals(employerEmail)) {
+            throw new org.springframework.security.access.AccessDeniedException("You are not authorized to update this application.");
+        }
+
+        application.setStatus(status);
+        jobApplicationRepository.save(application);
+    }
+
+    private JobApplicationDto mapToJobApplicationDto(JobApplication application) {
+        JobApplicationDto dto = new JobApplicationDto();
+        dto.setId(application.getId());
+        dto.setStatus(application.getStatus());
+        dto.setAppliedAt(application.getAppliedAt());
+
+        ApplicantDto applicantDto = new ApplicantDto();
+        User worker = application.getWorker();
+        applicantDto.setWorkerId(worker.getUserId());
+
+        if (worker.getProfile() instanceof WorkerProfile) {
+            WorkerProfile workerProfile = (WorkerProfile) worker.getProfile();
+            applicantDto.setFirstName(workerProfile.getFirstName());
+            applicantDto.setLastName(workerProfile.getLastName());
+            applicantDto.setSkills(workerProfile.getSkills());
+        }
+
+        dto.setApplicant(applicantDto);
+        return dto;
     }
 }
