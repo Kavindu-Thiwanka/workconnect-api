@@ -30,4 +30,6 @@ public interface JobService {
     JobListingDto mapToJobListingDto(JobPosting job);
 
     JobImage addImageToJob(String employerEmail, Long jobId, String imageUrl);
+
+    List<JobListingDto> getJobsByEmployer(String employerEmail);
 }

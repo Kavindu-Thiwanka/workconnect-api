@@ -230,4 +230,12 @@ public class JobServiceImpl implements JobService {
 
         return jobImageRepository.save(jobImage);
     }
+
+    @Override
+    public List<JobListingDto> getJobsByEmployer(String employerEmail) {
+        List<JobPosting> jobs = jobPostingRepository.findByEmployer_Email(employerEmail);
+        return jobs.stream()
+                .map(this::mapToJobListingDto)
+                .collect(Collectors.toList());
+    }
 }

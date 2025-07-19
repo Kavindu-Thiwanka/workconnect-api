@@ -2,6 +2,7 @@ package com.workconnect.api.controller;
 
 import com.workconnect.api.constants.Enum.JobApplicationStatus;
 import com.workconnect.api.dto.JobApplicationDto;
+import com.workconnect.api.dto.JobListingDto;
 import com.workconnect.api.dto.UpdateApplicationStatusDto;
 import com.workconnect.api.entity.JobApplication;
 import com.workconnect.api.service.BadgeService;
@@ -25,6 +26,12 @@ public class EmployerController {
     public EmployerController(JobService jobService, BadgeService badgeService) {
         this.jobService = jobService;
         this.badgeService = badgeService;
+    }
+
+    @GetMapping("/jobs")
+    public ResponseEntity<List<JobListingDto>> getMyPostedJobs(Principal principal) {
+        List<JobListingDto> jobs = jobService.getJobsByEmployer(principal.getName());
+        return ResponseEntity.ok(jobs);
     }
 
     @GetMapping("/jobs/{jobId}/applications")

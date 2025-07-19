@@ -15,4 +15,6 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     List<JobPosting> findByStatusAndJobTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
             JobStatus status, String titleKeyword, String descriptionKeyword
     );
+
+    List<JobPosting> findByEmployer_Email(String employerEmail);
 }

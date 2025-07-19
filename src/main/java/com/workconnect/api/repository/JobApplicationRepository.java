@@ -24,4 +24,6 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
      * @return The number of matching applications.
      */
     long countByWorkerAndStatus(User worker, JobApplicationStatus status);
+
+    List<JobApplication> findByWorker_Email(String email);
 }
