@@ -20,6 +20,7 @@ public class WorkerProfile extends Profile {
     private String location;
     private String experience;
     private String availability;
+    private String profileImageUrl;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(

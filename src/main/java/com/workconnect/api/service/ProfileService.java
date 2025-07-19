@@ -11,4 +11,6 @@ public interface ProfileService {
 
     EmployerProfileDto updateEmployerProfile(String email, EmployerProfileDto employerProfileDto);
 
+    void updateProfilePicture(String email, String imageUrl);
+
 }

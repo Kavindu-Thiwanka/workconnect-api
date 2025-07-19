@@ -16,6 +16,7 @@ public class EmployerProfile extends Profile {
     private String companyName;
     private String companyDescription;
     private String location;
+    private String companyLogoUrl;
 
     public EmployerProfile(User user) {
         super(user);

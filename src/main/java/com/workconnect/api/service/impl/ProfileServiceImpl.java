@@ -110,4 +110,19 @@ public class ProfileServiceImpl implements ProfileService {
         dto.setLocation(profile.getLocation());
         return dto;
     }
+
+    @Transactional
+    @Override
+    public void updateProfilePicture(String email, String imageUrl) {
+        User user = findUserByEmail(email);
+        Profile profile = user.getProfile();
+
+        if (profile instanceof WorkerProfile) {
+            ((WorkerProfile) profile).setProfileImageUrl(imageUrl);
+        } else if (profile instanceof EmployerProfile) {
+            ((EmployerProfile) profile).setCompanyLogoUrl(imageUrl);
+        }
+
+        userRepository.save(user);
+    }
 }
