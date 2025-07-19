@@ -6,6 +6,7 @@ import com.workconnect.api.constants.Enum.JobType;
 import com.workconnect.api.dto.*;
 import com.workconnect.api.entity.*;
 import com.workconnect.api.repository.JobApplicationRepository;
+import com.workconnect.api.repository.JobImageRepository;
 import com.workconnect.api.repository.JobPostingRepository;
 import com.workconnect.api.repository.UserRepository;
 import com.workconnect.api.service.JobService;
@@ -24,11 +25,14 @@ public class JobServiceImpl implements JobService {
     private final JobPostingRepository jobPostingRepository;
     private final UserRepository userRepository;
     private final JobApplicationRepository jobApplicationRepository;
+    private final JobImageRepository jobImageRepository;
 
-    public JobServiceImpl(JobPostingRepository jobPostingRepository, UserRepository userRepository, JobApplicationRepository jobApplicationRepository) {
+    public JobServiceImpl(JobPostingRepository jobPostingRepository, UserRepository userRepository, JobApplicationRepository jobApplicationRepository,
+                          JobImageRepository jobImageRepository) {
         this.jobPostingRepository = jobPostingRepository;
         this.userRepository = userRepository;
         this.jobApplicationRepository = jobApplicationRepository;
+        this.jobImageRepository = jobImageRepository;
     }
 
     @Override
@@ -208,5 +212,22 @@ public class JobServiceImpl implements JobService {
 
         dto.setApplicant(applicantDto);
         return dto;
+    }
+
+    @Transactional
+    @Override
+    public JobImage addImageToJob(String employerEmail, Long jobId, String imageUrl) {
+        JobPosting job = jobPostingRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        if (!job.getEmployer().getEmail().equals(employerEmail)) {
+            throw new org.springframework.security.access.AccessDeniedException("You are not authorized to add images to this job.");
+        }
+
+        JobImage jobImage = new JobImage();
+        jobImage.setImageUrl(imageUrl);
+        jobImage.setJobPosting(job);
+
+        return jobImageRepository.save(jobImage);
     }
 }
