@@ -4,6 +4,7 @@ import com.workconnect.api.constants.Enum.JobType;
 import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 public class JobDetailDto {
@@ -21,4 +22,6 @@ public class JobDetailDto {
     private LocalDate jobDate; // For ONE_DAY
     private LocalDate startDate; // For CONTRACT
     private LocalDate endDate;   // For CONTRACT
+
+    private Set<String> imageUrls;
 }

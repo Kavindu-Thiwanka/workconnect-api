@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/profiles")
@@ -59,11 +60,12 @@ public class ProfileController {
     }
 
     @PostMapping("/me/picture")
-    public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file, Principal principal) {
+    public ResponseEntity<Object> uploadProfilePicture(@RequestParam("file") MultipartFile file, Principal principal) {
         try {
             String imageUrl = fileUploadService.uploadFile(file);
             profileService.updateProfilePicture(principal.getName(), imageUrl);
-            return ResponseEntity.ok("Profile picture updated successfully: " + imageUrl);
+            Map<String, String> response = Map.of("imageUrl", imageUrl);
+            return ResponseEntity.ok(response);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image.");
         }

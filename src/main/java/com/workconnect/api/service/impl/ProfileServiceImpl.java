@@ -93,6 +93,7 @@ public class ProfileServiceImpl implements ProfileService {
         dto.setFirstName(profile.getFirstName());
         dto.setLastName(profile.getLastName());
         dto.setLocation(profile.getLocation());
+        dto.setProfileImageUrl(profile.getProfileImageUrl());
         Set<String> skills = new HashSet<>();
         for (Skill skill : profile.getSkills()) {
             skills.add(skill.getName());
@@ -108,6 +109,7 @@ public class ProfileServiceImpl implements ProfileService {
         dto.setCompanyName(profile.getCompanyName());
         dto.setCompanyDescription(profile.getCompanyDescription());
         dto.setLocation(profile.getLocation());
+        dto.setCompanyLogoUrl(profile.getCompanyLogoUrl());
         return dto;
     }
 

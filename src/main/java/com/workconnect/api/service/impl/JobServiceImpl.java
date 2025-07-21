@@ -124,6 +124,12 @@ public class JobServiceImpl implements JobService {
             dto.setEmployerCompanyName(((EmployerProfile) job.getEmployer().getProfile()).getCompanyName());
         }
 
+        if (job.getJobImages() != null) {
+            dto.setImageUrls(job.getJobImages().stream()
+                    .map(JobImage::getImageUrl)
+                    .collect(Collectors.toSet()));
+        }
+
         if (job.getJobType() == JobType.ONE_DAY) {
             dto.setJobDate(job.getStartDate());
         } else if (job.getJobType() == JobType.CONTRACT) {

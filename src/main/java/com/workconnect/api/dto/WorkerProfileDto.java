@@ -15,6 +15,7 @@ public class WorkerProfileDto {
     private String experience;
     private String availability;
     private Set<String> skills = new HashSet<>();
+    private String profileImageUrl;
 
     public static WorkerProfileDto fromEntity(WorkerProfile profile) {
         WorkerProfileDto dto = new WorkerProfileDto();
@@ -23,6 +24,7 @@ public class WorkerProfileDto {
         dto.setLocation(profile.getLocation());
         dto.setExperience(profile.getExperience());
         dto.setAvailability(profile.getAvailability());
+        dto.setProfileImageUrl(profile.getProfileImageUrl());
 
         if (profile.getSkills() != null) {
             dto.setSkills(profile.getSkills().stream()
