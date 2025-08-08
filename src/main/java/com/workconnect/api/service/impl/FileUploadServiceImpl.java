@@ -34,9 +34,21 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     public String uploadFile(MultipartFile multipartFile) throws IOException {
-        return cloudinary.uploader()
-                .upload(multipartFile.getBytes(), Map.of())
-                .get("url")
-                .toString();
+        try {
+            // Configure upload options with proper transformation format
+            Map<String, Object> uploadOptions = Map.of(
+                "folder", "workconnect/profiles",
+                "resource_type", "image",
+                "format", "jpg",
+                "transformation", "w_400,h_400,c_fill,q_auto"
+            );
+
+            Map<String, Object> uploadResult = cloudinary.uploader()
+                    .upload(multipartFile.getBytes(), uploadOptions);
+
+            return uploadResult.get("secure_url").toString();
+        } catch (Exception e) {
+            throw new IOException("Failed to upload file to Cloudinary: " + e.getMessage(), e);
+        }
     }
 }

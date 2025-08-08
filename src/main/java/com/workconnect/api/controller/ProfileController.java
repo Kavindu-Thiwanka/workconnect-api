@@ -62,12 +62,32 @@ public class ProfileController {
     @PostMapping("/me/picture")
     public ResponseEntity<Object> uploadProfilePicture(@RequestParam("file") MultipartFile file, Principal principal) {
         try {
+            // Validate file
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Please select a file to upload"));
+            }
+
+            // Validate file type
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Only image files are allowed"));
+            }
+
+            // Validate file size (5MB limit)
+            if (file.getSize() > 5 * 1024 * 1024) {
+                return ResponseEntity.badRequest().body(Map.of("error", "File size must be less than 5MB"));
+            }
+
             String imageUrl = fileUploadService.uploadFile(file);
             profileService.updateProfilePicture(principal.getName(), imageUrl);
             Map<String, String> response = Map.of("imageUrl", imageUrl);
             return ResponseEntity.ok(response);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload image.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to upload image: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An unexpected error occurred: " + e.getMessage()));
         }
     }
 }
