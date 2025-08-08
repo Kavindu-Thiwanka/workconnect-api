@@ -317,7 +317,8 @@ public class DashboardServiceImpl implements DashboardService {
         long interviewsScheduled = jobApplicationRepository.countByWorkerAndStatus(user, JobApplicationStatus.COMPLETED);
 
         // Profile views (simplified - could be tracked separately)
-        int profileViews = totalApplications * 3 + 15; // Placeholder logic
+//        int profileViews = totalApplications * 3 + 15;
+        int profileViews = 0;
 
         // Job matches this week (simplified)
         int jobMatchesThisWeek = (int) jobPostingRepository.findByStatus(JobStatus.OPEN).size();
@@ -328,7 +329,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .interviewsScheduled((int) interviewsScheduled)
                 .profileViews(profileViews)
                 .jobMatchesThisWeek(jobMatchesThisWeek)
-                .averageResponseTime(3.5) // Placeholder
+                .averageResponseTime(3.5)
                 .build();
     }
 
