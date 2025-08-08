@@ -13,6 +13,17 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+# Server configuration
+server:
+  error:
+    # Include error details in response (disable in production)
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+    include-exception: false
+    # Custom error path
+    path: /error
+
 # ===================================================================
 # DEVELOPMENT PROFILE (for local development)
 # ===================================================================
