@@ -48,8 +48,11 @@ public class ProfileServiceImpl implements ProfileService {
 
         workerProfile.setFirstName(workerProfileDto.getFirstName());
         workerProfile.setLastName(workerProfileDto.getLastName());
+        workerProfile.setPhoneNumber(workerProfileDto.getPhoneNumber());
         workerProfile.setLocation(workerProfileDto.getLocation());
+        workerProfile.setBio(workerProfileDto.getBio());
         workerProfile.setExperience(workerProfileDto.getExperience());
+        workerProfile.setEducation(workerProfileDto.getEducation());
         workerProfile.setAvailability(workerProfileDto.getAvailability());
 
         if (workerProfileDto.getSkills() != null) {
@@ -92,15 +95,20 @@ public class ProfileServiceImpl implements ProfileService {
         WorkerProfileDto dto = new WorkerProfileDto();
         dto.setFirstName(profile.getFirstName());
         dto.setLastName(profile.getLastName());
+        dto.setPhoneNumber(profile.getPhoneNumber());
         dto.setLocation(profile.getLocation());
+        dto.setBio(profile.getBio());
+        dto.setExperience(profile.getExperience());
+        dto.setEducation(profile.getEducation());
+        dto.setAvailability(profile.getAvailability());
         dto.setProfileImageUrl(profile.getProfileImageUrl());
+        dto.setResumeUrl(profile.getResumeUrl());
+
         Set<String> skills = new HashSet<>();
         for (Skill skill : profile.getSkills()) {
             skills.add(skill.getName());
         }
         dto.setSkills(skills);
-        dto.setExperience(profile.getExperience());
-        dto.setAvailability(profile.getAvailability());
         return dto;
     }
 

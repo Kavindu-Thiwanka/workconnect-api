@@ -17,10 +17,14 @@ public class WorkerProfile extends Profile {
 
     private String firstName;
     private String lastName;
+    private String phoneNumber;
     private String location;
+    private String bio;
     private String experience;
+    private String education;
     private String availability;
     private String profileImageUrl;
+    private String resumeUrl;
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(
