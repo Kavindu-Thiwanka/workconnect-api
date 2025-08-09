@@ -19,7 +19,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "YourSuperSecureSecretKeyForWorkConnectAppThatIsAtLeast256BitsLong";
+    private final String SECRET_KEY = "V9OJtOZUm/AtC6nfhwVd9nZ7+P6+E6nUGgPkfFyzbQ8=";
     private final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 30; // 30 minutes
     private final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
 
