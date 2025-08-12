@@ -47,6 +47,11 @@ public class JobServiceImpl implements JobService {
         newJob.setEmployer(employer);
         newJob.setStatus(JobStatus.OPEN);
 
+        // FIX: Set the missing critical fields
+        newJob.setSalary(jobDto.getSalary());
+        newJob.setLocation(jobDto.getLocation());
+        newJob.setRequiredSkills(jobDto.getRequiredSkills());
+
         if (jobDto.getJobType() == JobType.ONE_DAY) {
             if (jobDto.getStartDate() == null) {
                 throw new IllegalArgumentException("A start date (jobDate) is required for a one-day job.");
@@ -62,6 +67,78 @@ public class JobServiceImpl implements JobService {
         }
 
         return jobPostingRepository.save(newJob);
+    }
+
+    @Transactional
+    @Override
+    public JobPosting updateJob(String employerEmail, Long jobId, UpdateJobRequestDto jobDto) {
+        JobPosting existingJob = jobPostingRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found with id: " + jobId));
+
+        // Verify that the employer owns this job
+        if (!existingJob.getEmployer().getEmail().equals(employerEmail)) {
+            throw new org.springframework.security.access.AccessDeniedException("You are not authorized to update this job.");
+        }
+
+        // Update all fields
+        existingJob.setJobTitle(jobDto.getJobTitle());
+        existingJob.setDescription(jobDto.getDescription());
+        existingJob.setRequiredSkills(jobDto.getRequiredSkills());
+        existingJob.setLocation(jobDto.getLocation());
+        existingJob.setSalary(jobDto.getSalary());
+        existingJob.setJobType(jobDto.getJobType());
+
+        // Update date fields based on job type
+        if (jobDto.getJobType() == JobType.ONE_DAY) {
+            if (jobDto.getStartDate() == null) {
+                throw new IllegalArgumentException("A start date (jobDate) is required for a one-day job.");
+            }
+            existingJob.setStartDate(jobDto.getStartDate());
+            existingJob.setEndDate(null);
+        } else if (jobDto.getJobType() == JobType.CONTRACT) {
+            if (jobDto.getStartDate() == null || jobDto.getEndDate() == null) {
+                throw new IllegalArgumentException("Both a start date and an end date are required for a contract job.");
+            }
+            existingJob.setStartDate(jobDto.getStartDate());
+            existingJob.setEndDate(jobDto.getEndDate());
+        }
+
+        return jobPostingRepository.save(existingJob);
+    }
+
+    @Transactional
+    @Override
+    public void deleteJob(String employerEmail, Long jobId) {
+        JobPosting existingJob = jobPostingRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found with id: " + jobId));
+
+        // Verify that the employer owns this job
+        if (!existingJob.getEmployer().getEmail().equals(employerEmail)) {
+            throw new org.springframework.security.access.AccessDeniedException("You are not authorized to delete this job.");
+        }
+
+        // Check if there are any applications for this job
+        long applicationCount = jobApplicationRepository.countByJobPosting_Id(jobId);
+        if (applicationCount > 0) {
+            throw new IllegalStateException("Cannot delete job with existing applications. Please close the job instead.");
+        }
+
+        jobPostingRepository.delete(existingJob);
+    }
+
+    @Transactional
+    @Override
+    public JobPosting updateJobStatus(String employerEmail, Long jobId, JobStatus status) {
+        JobPosting existingJob = jobPostingRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found with id: " + jobId));
+
+        // Verify that the employer owns this job
+        if (!existingJob.getEmployer().getEmail().equals(employerEmail)) {
+            throw new org.springframework.security.access.AccessDeniedException("You are not authorized to update this job status.");
+        }
+
+        existingJob.setStatus(status);
+        return jobPostingRepository.save(existingJob);
     }
 
     @Override

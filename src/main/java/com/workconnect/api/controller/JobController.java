@@ -1,6 +1,8 @@
 package com.workconnect.api.controller;
 
 import com.workconnect.api.dto.CreateJobRequestDto;
+import com.workconnect.api.dto.UpdateJobRequestDto;
+import com.workconnect.api.dto.UpdateJobStatusDto;
 import com.workconnect.api.dto.JobDetailDto;
 import com.workconnect.api.dto.JobListingDto;
 import com.workconnect.api.entity.JobImage;
@@ -35,6 +37,33 @@ public class JobController {
     public ResponseEntity<JobPosting> postJob(@Valid @RequestBody CreateJobRequestDto jobDto, Principal principal) {
         JobPosting createdJob = jobService.createJob(principal.getName(), jobDto);
         return new ResponseEntity<>(createdJob, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{jobId}")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    public ResponseEntity<JobPosting> updateJob(
+            @PathVariable Long jobId,
+            @Valid @RequestBody UpdateJobRequestDto jobDto,
+            Principal principal) {
+        JobPosting updatedJob = jobService.updateJob(principal.getName(), jobId, jobDto);
+        return ResponseEntity.ok(updatedJob);
+    }
+
+    @DeleteMapping("/{jobId}")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    public ResponseEntity<Void> deleteJob(@PathVariable Long jobId, Principal principal) {
+        jobService.deleteJob(principal.getName(), jobId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{jobId}/status")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    public ResponseEntity<JobPosting> updateJobStatus(
+            @PathVariable Long jobId,
+            @Valid @RequestBody UpdateJobStatusDto statusDto,
+            Principal principal) {
+        JobPosting updatedJob = jobService.updateJobStatus(principal.getName(), jobId, statusDto.getStatus());
+        return ResponseEntity.ok(updatedJob);
     }
 
     @GetMapping

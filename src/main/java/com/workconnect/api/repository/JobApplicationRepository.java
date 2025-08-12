@@ -26,4 +26,13 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     long countByWorkerAndStatus(User worker, JobApplicationStatus status);
 
     List<JobApplication> findByWorker_Email(String email);
+
+    /**
+     * Counts all applications for a specific job posting.
+     * Spring Data JPA creates the query automatically from this method name.
+     *
+     * @param jobId The job posting ID to count applications for.
+     * @return The number of applications for the job.
+     */
+    long countByJobPosting_Id(Long jobId);
 }
