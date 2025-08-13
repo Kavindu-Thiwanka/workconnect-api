@@ -17,6 +17,7 @@ public class JobDetailDto {
     private JobType jobType;
     private String employerCompanyName;
     private LocalDateTime postedAt;
+    private Integer applicationCount;
 
     // Fields specific to job types
     private LocalDate jobDate; // For ONE_DAY

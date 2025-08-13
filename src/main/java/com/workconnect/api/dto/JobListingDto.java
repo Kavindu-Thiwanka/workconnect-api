@@ -23,4 +23,5 @@ public class JobListingDto {
     private JobStatus status;
     private String employerCompanyName;
     private LocalDateTime postedAt;
+    private Integer applicationCount;
 }

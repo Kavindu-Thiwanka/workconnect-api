@@ -5,6 +5,7 @@ import com.workconnect.api.dto.UpdateJobRequestDto;
 import com.workconnect.api.dto.UpdateJobStatusDto;
 import com.workconnect.api.dto.JobDetailDto;
 import com.workconnect.api.dto.JobListingDto;
+import com.workconnect.api.dto.ApplicationStatusResponse;
 import com.workconnect.api.entity.JobImage;
 import com.workconnect.api.entity.JobPosting;
 import com.workconnect.api.service.FileUploadService;
@@ -82,6 +83,13 @@ public class JobController {
     public ResponseEntity<JobDetailDto> getJobDetails(@PathVariable Long jobId) {
         JobDetailDto jobDto = jobService.getJobById(jobId);
         return ResponseEntity.ok(jobDto);
+    }
+
+    @GetMapping("/{jobId}/application-status")
+    @PreAuthorize("hasRole('WORKER')")
+    public ResponseEntity<ApplicationStatusResponse> checkApplicationStatus(@PathVariable Long jobId, Principal principal) {
+        ApplicationStatusResponse response = jobService.checkApplicationStatus(principal.getName(), jobId);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{jobId}/apply")

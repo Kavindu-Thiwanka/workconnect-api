@@ -6,6 +6,7 @@ import com.workconnect.api.dto.UpdateJobRequestDto;
 import com.workconnect.api.dto.JobApplicationDto;
 import com.workconnect.api.dto.JobDetailDto;
 import com.workconnect.api.dto.JobListingDto;
+import com.workconnect.api.dto.ApplicationStatusResponse;
 import com.workconnect.api.entity.JobApplication;
 import com.workconnect.api.entity.JobImage;
 import com.workconnect.api.entity.JobPosting;
@@ -29,6 +30,8 @@ public interface JobService {
     JobDetailDto getJobById(Long jobId);
 
     void applyForJob(String workerEmail, Long jobId);
+
+    ApplicationStatusResponse checkApplicationStatus(String workerEmail, Long jobId);
 
     List<JobApplicationDto> getApplicationsForJob(String employerEmail, Long jobId);
 

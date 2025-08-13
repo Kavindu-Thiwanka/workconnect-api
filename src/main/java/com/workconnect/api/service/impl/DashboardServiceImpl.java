@@ -391,6 +391,9 @@ public class DashboardServiceImpl implements DashboardService {
                     employerProfile.getCompanyName() : "Company";
         }
 
+        // Get application count for this job
+        int applicationCount = jobApplicationRepository.findByJobPosting_Id(jobPosting.getId()).size();
+
         return JobListingDto.builder()
                 .id(jobPosting.getId())
                 .jobTitle(jobPosting.getJobTitle())
@@ -402,6 +405,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .status(jobPosting.getStatus())
                 .employerCompanyName(employerCompanyName)
                 .postedAt(jobPosting.getPostedAt())
+                .applicationCount(applicationCount)
                 .build();
     }
 

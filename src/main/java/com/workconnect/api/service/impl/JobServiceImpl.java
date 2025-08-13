@@ -5,6 +5,7 @@ import com.workconnect.api.constants.Enum.JobStatus;
 import com.workconnect.api.constants.Enum.JobType;
 import com.workconnect.api.dto.*;
 import com.workconnect.api.entity.*;
+import com.workconnect.api.dto.ApplicationStatusResponse;
 import com.workconnect.api.repository.JobApplicationRepository;
 import com.workconnect.api.repository.JobImageRepository;
 import com.workconnect.api.repository.JobPostingRepository;
@@ -165,15 +166,22 @@ public class JobServiceImpl implements JobService {
         JobListingDto dto = new JobListingDto();
         dto.setId(job.getId());
         dto.setJobTitle(job.getJobTitle());
+        dto.setDescription(job.getDescription());
+        dto.setRequiredSkills(job.getRequiredSkills());
         dto.setLocation(job.getLocation());
         dto.setSalary(job.getSalary());
         dto.setJobType(job.getJobType());
+        dto.setStatus(job.getStatus());
         dto.setPostedAt(job.getPostedAt());
 
         if (job.getEmployer().getProfile() instanceof EmployerProfile) {
             EmployerProfile employerProfile = (EmployerProfile) job.getEmployer().getProfile();
             dto.setEmployerCompanyName(employerProfile.getCompanyName());
         }
+
+        // Get application count for this job
+        int applicationCount = jobApplicationRepository.findByJobPosting_Id(job.getId()).size();
+        dto.setApplicationCount(applicationCount);
 
         return dto;
     }
@@ -200,6 +208,10 @@ public class JobServiceImpl implements JobService {
         if (job.getEmployer().getProfile() instanceof EmployerProfile) {
             dto.setEmployerCompanyName(((EmployerProfile) job.getEmployer().getProfile()).getCompanyName());
         }
+
+        // Get application count for this job
+        int applicationCount = jobApplicationRepository.findByJobPosting_Id(job.getId()).size();
+        dto.setApplicationCount(applicationCount);
 
         if (job.getJobImages() != null) {
             dto.setImageUrls(job.getJobImages().stream()
@@ -239,6 +251,32 @@ public class JobServiceImpl implements JobService {
         application.setStatus(JobApplicationStatus.PENDING);
 
         jobApplicationRepository.save(application);
+    }
+
+    @Override
+    public ApplicationStatusResponse checkApplicationStatus(String workerEmail, Long jobId) {
+        User worker = userRepository.findByEmail(workerEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Worker not found"));
+
+        JobPosting job = jobPostingRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        // Check if worker has already applied for this job
+        JobApplication existingApplication = jobApplicationRepository
+                .findByWorker_UserIdAndJobPosting_Id(worker.getUserId(), jobId)
+                .orElse(null);
+
+        if (existingApplication != null) {
+            return ApplicationStatusResponse.builder()
+                    .hasApplied(true)
+                    .applicationId(existingApplication.getId())
+                    .status(existingApplication.getStatus())
+                    .build();
+        } else {
+            return ApplicationStatusResponse.builder()
+                    .hasApplied(false)
+                    .build();
+        }
     }
 
     @Override
