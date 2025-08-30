@@ -30,9 +30,17 @@ public class JobApplication {
     private JobApplicationStatus status;
 
     private LocalDateTime appliedAt;
+    private LocalDateTime statusUpdatedAt;
+    private String coverLetter;
 
     @PrePersist
     protected void onCreate() {
         appliedAt = LocalDateTime.now();
+        statusUpdatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        statusUpdatedAt = LocalDateTime.now();
     }
 }
