@@ -3,9 +3,14 @@ package com.workconnect.api.repository;
 import com.workconnect.api.constants.Enum.JobApplicationStatus;
 import com.workconnect.api.entity.JobApplication;
 import com.workconnect.api.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,4 +43,15 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
      * @return The number of applications for the job.
      */
     long countByJobPosting_Id(Long jobId);
+
+    // Admin-specific queries
+    long countByStatus(JobApplicationStatus status);
+    Long countByWorker_UserId(Long workerId);
+    Long countByJobPosting_IdAndStatus(Long jobId, JobApplicationStatus status);
+
+    Page<JobApplication> findByJobPosting_Id(Long jobId, Pageable pageable);
+    Page<JobApplication> findByWorker_UserId(Long workerId, Pageable pageable);
+
+    @Query("SELECT COUNT(ja) FROM JobApplication ja WHERE ja.id > (SELECT MAX(ja2.id) - 100 FROM JobApplication ja2)")
+    Long countByCreatedAtAfter(@Param("createdAt") LocalDateTime createdAt);
 }
