@@ -1,13 +1,137 @@
+# ===================================================================
+# COMMON PROPERTIES (Applied to all profiles)
+# ===================================================================
 spring:
   application:
-    name: work-connect-api
+    name: workconnect-api
 
-  # Set 'dev' as the default profile if no other profile is specified
   profiles:
     active: dev
 
-  # Common JPA properties (can be overridden by profiles)
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    default-property-inclusion: non_null
+
+# Server configuration
+server:
+  error:
+    # Include error details in response (disable in production)
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+    include-exception: false
+    # Custom error path
+    path: /error
+
+# ===================================================================
+# DEVELOPMENT PROFILE (for local development)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/workconnect_db
+    username: postgres
+    password: 1234
+
   jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      # 'update' automatically modifies the database schema based on entity changes.
+      # Perfect for development, but unsafe for production.
+      ddl-auto: update
+    show-sql: true # Shows Hibernate-generated SQL in the console.
+
+logging:
+  level:
+    # Set to DEBUG for detailed logs during development.
+    com.workconnect.api: DEBUG
+
+server:
+  port: 8080
+
+cloudinary:
+  cloud_name: dprp4acyo
+  api_key: 769213188135926
+  api_secret: 6ELCi5qYgcIp9xgzq2tGQvGARTA
+
+# ===================================================================
+# TESTING PROFILE (for automated integration tests)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: testing
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/workconnect_test_db
+    username: postgres
+    password: password
+
+  jpa:
+    hibernate:
+      # 'create-drop' creates the schema on startup and drops it on shutdown.
+      # This ensures tests run against a clean, predictable database.
+      ddl-auto: none
+    show-sql: false
+
+logging:
+  level:
+    # Set to INFO to reduce log noise during tests.
+    com.workconnect.api: INFO
+
+server:
+  port: 8081
+
+cloudinary:
+  cloud_name: dprp4acyo
+  api_key: 769213188135926
+  api_secret: 6ELCi5qYgcIp9xgzq2tGQvGARTA
+
+# ===================================================================
+# PRODUCTION PROFILE (for the live environment)
+# ===================================================================
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    # CRITICAL: Use environment variables for production credentials.
+    # NEVER hardcode production secrets in your source code.
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+
+  jpa:
+    hibernate:
+      # 'validate' checks if the table schema matches your entities on startup.
+      # It's a safe setting for production that prevents accidental data loss.
+      # NEVER use 'update' or 'create' in production.
+      ddl-auto: validate
+    show-sql: false
+
+logging:
+  level:
+    # Set to WARN to only log significant issues in production.
+    com.workconnect.api: WARN
+
+server:
+  port: 8080
+
+cloudinary:
+  cloud_name: dprp4acyo
+  api_key: 769213188135926
+  api_secret: 6ELCi5qYgcIp9xgzq2tGQvGARTA
