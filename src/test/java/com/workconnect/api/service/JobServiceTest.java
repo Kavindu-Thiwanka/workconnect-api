@@ -37,9 +37,6 @@ class JobServiceTest {
     @Mock
     private JobApplicationRepository jobApplicationRepository;
 
-    @Mock
-    private JobImageRepository jobImageRepository;
-
     @InjectMocks
     private JobServiceImpl jobService;
 
