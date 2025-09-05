@@ -83,9 +83,9 @@ class JobServiceTest {
         assertNotNull(result);
         assertEquals("Software Engineer", result.getJobTitle());
         assertEquals("Develop amazing software", result.getDescription());
-        assertEquals("Java, Spring Boot, React", result.getRequiredSkills()); // This should now work!
-        assertEquals("New York, NY", result.getLocation()); // This should now work!
-        assertEquals(75000.0, result.getSalary()); // This should now work!
+        assertEquals("Java, Spring Boot, React", result.getRequiredSkills());
+        assertEquals("New York, NY", result.getLocation());
+        assertEquals(75000.0, result.getSalary());
         assertEquals(JobType.CONTRACT, result.getJobType());
         assertEquals(JobStatus.OPEN, result.getStatus());
         assertEquals(employer, result.getEmployer());
@@ -111,8 +111,7 @@ class JobServiceTest {
         assertEquals(JobType.ONE_DAY, result.getJobType());
         assertEquals(jobDto.getStartDate(), result.getStartDate());
         assertNull(result.getEndDate());
-        
-        // Verify salary, location, and skills are still set
+
         assertEquals(75000.0, result.getSalary());
         assertEquals("New York, NY", result.getLocation());
         assertEquals("Java, Spring Boot, React", result.getRequiredSkills());
