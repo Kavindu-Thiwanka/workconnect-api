@@ -8,7 +8,6 @@ import com.workconnect.api.dto.LoginResponseDto;
 import com.workconnect.api.dto.RefreshTokenRequestDto;
 import com.workconnect.api.dto.RegistrationRequestDto;
 import com.workconnect.api.entity.EmployerProfile;
-import com.workconnect.api.entity.Profile;
 import com.workconnect.api.entity.User;
 import com.workconnect.api.entity.WorkerProfile;
 import com.workconnect.api.repository.UserRepository;
