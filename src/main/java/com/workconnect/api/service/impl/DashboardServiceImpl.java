@@ -199,7 +199,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         List<String> missingFields = new ArrayList<>();
         List<String> tips = new ArrayList<>();
-        int totalFields = 10; // Total number of profile fields
+        int totalFields = 10;
         int completedFields = 0;
 
         if (workerProfile != null) {
