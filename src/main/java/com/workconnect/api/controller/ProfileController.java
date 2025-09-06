@@ -52,13 +52,6 @@ public class ProfileController {
         return ResponseEntity.ok(updatedProfile);
     }
 
-    @GetMapping("/me/recommendations")
-    @PreAuthorize("hasRole('WORKER')")
-    public ResponseEntity<List<JobListingDto>> getRecommendations(Principal principal) {
-        List<JobListingDto> recommendations = recommendationService.getJobRecommendations(principal.getName());
-        return ResponseEntity.ok(recommendations);
-    }
-
     @PostMapping("/me/picture")
     public ResponseEntity<Object> uploadProfilePicture(@RequestParam("file") MultipartFile file, Principal principal) {
         try {
