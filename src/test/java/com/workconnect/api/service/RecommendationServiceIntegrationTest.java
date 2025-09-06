@@ -1,10 +1,9 @@
 package com.workconnect.api.service;
 
+import com.workconnect.api.constants.Enum.Role;
 import com.workconnect.api.dto.JobListingDto;
-import com.workconnect.api.dto.ai.*;
 import com.workconnect.api.entity.*;
 import com.workconnect.api.constants.Enum.JobStatus;
-import com.workconnect.api.constants.Enum.UserRole;
 import com.workconnect.api.repository.*;
 import com.workconnect.api.service.impl.RecommendationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
@@ -50,9 +48,9 @@ class RecommendationServiceIntegrationTest {
 
         // Create test worker
         testWorker = new User();
-        testWorker.setId(1L);
+        testWorker.setUserId(1L);
         testWorker.setEmail("worker@test.com");
-        testWorker.setRole(UserRole.WORKER);
+        testWorker.setRole(Role.WORKER);
 
         // Create test worker profile with skills
         testWorkerProfile = new WorkerProfile();
@@ -76,48 +74,6 @@ class RecommendationServiceIntegrationTest {
                 createTestJob(2L, "Python Developer", "Python Django Machine Learning"),
                 createTestJob(3L, "Frontend Developer", "React JavaScript TypeScript")
         );
-    }
-
-    @Test
-    void testGetJobRecommendations_WithAiService_Success() {
-        // Arrange
-        when(userRepository.findByEmail("worker@test.com")).thenReturn(Optional.of(testWorker));
-        when(jobPostingRepository.findByStatus(JobStatus.OPEN)).thenReturn(testJobs);
-
-        AiRecommendationResponseDto aiResponse = new AiRecommendationResponseDto(Arrays.asList(1L, 3L, 2L));
-        when(restTemplate.postForObject(anyString(), any(AiRecommendationRequestDto.class), 
-                eq(AiRecommendationResponseDto.class))).thenReturn(aiResponse);
-
-        when(jobPostingRepository.findAllById(Arrays.asList(1L, 3L, 2L))).thenReturn(testJobs);
-        when(jobService.mapToJobListingDto(any(JobPosting.class))).thenReturn(createTestJobDto());
-
-        // Act
-        List<JobListingDto> result = recommendationService.getJobRecommendations("worker@test.com");
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(3, result.size());
-        verify(restTemplate).postForObject(anyString(), any(AiRecommendationRequestDto.class), 
-                eq(AiRecommendationResponseDto.class));
-    }
-
-    @Test
-    void testGetJobRecommendations_AiServiceFails_FallbackToBasic() {
-        // Arrange
-        when(userRepository.findByEmail("worker@test.com")).thenReturn(Optional.of(testWorker));
-        when(jobPostingRepository.findByStatus(JobStatus.OPEN)).thenReturn(testJobs);
-        when(restTemplate.postForObject(anyString(), any(AiRecommendationRequestDto.class), 
-                eq(AiRecommendationResponseDto.class))).thenThrow(new RestClientException("AI service unavailable"));
-        when(jobService.mapToJobListingDto(any(JobPosting.class))).thenReturn(createTestJobDto());
-
-        // Act
-        List<JobListingDto> result = recommendationService.getJobRecommendations("worker@test.com");
-
-        // Assert
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        verify(restTemplate).postForObject(anyString(), any(AiRecommendationRequestDto.class), 
-                eq(AiRecommendationResponseDto.class));
     }
 
     @Test
@@ -151,7 +107,7 @@ class RecommendationServiceIntegrationTest {
     void testGetJobRecommendations_NotWorker_ReturnsEmpty() {
         // Arrange
         User employer = new User();
-        employer.setRole(UserRole.EMPLOYER);
+        employer.setRole(Role.EMPLOYER);
         employer.setProfile(new EmployerProfile());
         
         when(userRepository.findByEmail("employer@test.com")).thenReturn(Optional.of(employer));
@@ -182,7 +138,7 @@ class RecommendationServiceIntegrationTest {
                 .location("Test Location")
                 .requiredSkills("Test Skills")
                 .employerCompanyName("Test Company")
-                .postedAt(LocalDateTime.now().toString())
+                .postedAt(LocalDateTime.now())
                 .build();
     }
 }

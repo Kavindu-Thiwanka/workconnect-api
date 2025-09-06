@@ -69,7 +69,7 @@ public class RecommendationServiceImpl implements RecommendationService {
         // 3. Check if AI service is enabled and available
         if (!aiServiceEnabled) {
             logger.info("AI service is disabled, returning fallback recommendations");
-            return getFallbackRecommendations(openJobs);
+            return List.of();
         }
 
         try {
@@ -77,7 +77,7 @@ public class RecommendationServiceImpl implements RecommendationService {
         } catch (Exception e) {
             logger.error("AI service failed for user {}: {}. Falling back to basic recommendations",
                         workerEmail, e.getMessage());
-            return getFallbackRecommendations(openJobs);
+            return List.of();
         }
     }
 

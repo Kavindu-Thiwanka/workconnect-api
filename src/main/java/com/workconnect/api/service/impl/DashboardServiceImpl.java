@@ -124,14 +124,19 @@ public class DashboardServiceImpl implements DashboardService {
             logger.info("Attempting to get AI-powered job recommendations for user: {}", userEmail);
             recommendations = recommendationService.getJobRecommendations(userEmail);
 
-            // Limit the results if needed
-            if (recommendations.size() > limit) {
-                recommendations = recommendations.stream().limit(limit).collect(Collectors.toList());
-            }
+            if (recommendations.isEmpty()) {
+                recommendations = getFallbackRecommendations(workerProfile, limit);
+                recommendationReason = "Basic recommendations based on your location and profile (AI service unavailable)";
+            } else {
+                // Limit the results if needed
+                if (recommendations.size() > limit) {
+                    recommendations = recommendations.stream().limit(limit).collect(Collectors.toList());
+                }
 
-            recommendationReason = "AI-powered recommendations based on your skills and experience";
-            logger.info("Successfully retrieved {} AI-powered recommendations for user: {}",
-                       recommendations.size(), userEmail);
+                recommendationReason = "AI-powered recommendations based on your skills and experience";
+                logger.info("Successfully retrieved {} AI-powered recommendations for user: {}",
+                        recommendations.size(), userEmail);
+            }
 
         } catch (Exception e) {
             // Fallback to basic recommendation logic if AI service fails
