@@ -8,6 +8,9 @@ import com.workconnect.api.dto.dashboard.*;
 import com.workconnect.api.entity.*;
 import com.workconnect.api.repository.*;
 import com.workconnect.api.service.DashboardService;
+import com.workconnect.api.service.RecommendationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -20,23 +23,28 @@ import java.util.ArrayList;
 @Service
 public class DashboardServiceImpl implements DashboardService {
 
+    private static final Logger logger = LoggerFactory.getLogger(DashboardServiceImpl.class);
+
     private final UserRepository userRepository;
     private final WorkerProfileRepository workerProfileRepository;
     private final EmployerProfileRepository employerProfileRepository;
     private final JobPostingRepository jobPostingRepository;
     private final JobApplicationRepository jobApplicationRepository;
+    private final RecommendationService recommendationService;
 
     public DashboardServiceImpl(
             UserRepository userRepository,
             WorkerProfileRepository workerProfileRepository,
             EmployerProfileRepository employerProfileRepository,
             JobPostingRepository jobPostingRepository,
-            JobApplicationRepository jobApplicationRepository) {
+            JobApplicationRepository jobApplicationRepository,
+            RecommendationService recommendationService) {
         this.userRepository = userRepository;
         this.workerProfileRepository = workerProfileRepository;
         this.employerProfileRepository = employerProfileRepository;
         this.jobPostingRepository = jobPostingRepository;
         this.jobApplicationRepository = jobApplicationRepository;
+        this.recommendationService = recommendationService;
     }
 
     @Override
@@ -108,7 +116,51 @@ public class DashboardServiceImpl implements DashboardService {
         WorkerProfile workerProfile = workerProfileRepository.findByUser(user)
                 .orElseThrow(() -> new IllegalStateException("Worker profile not found"));
 
-        // Enhanced recommendation logic based on worker profile
+        List<JobListingDto> recommendations;
+        String recommendationReason;
+
+        try {
+            // Try to get AI-powered recommendations
+            logger.info("Attempting to get AI-powered job recommendations for user: {}", userEmail);
+            recommendations = recommendationService.getJobRecommendations(userEmail);
+
+            if (recommendations.isEmpty()) {
+                recommendations = getFallbackRecommendations(workerProfile, limit);
+                recommendationReason = "Basic recommendations based on your location and profile (AI service unavailable)";
+            } else {
+                // Limit the results if needed
+                if (recommendations.size() > limit) {
+                    recommendations = recommendations.stream().limit(limit).collect(Collectors.toList());
+                }
+
+                recommendationReason = "AI-powered recommendations based on your skills and experience";
+                logger.info("Successfully retrieved {} AI-powered recommendations for user: {}",
+                        recommendations.size(), userEmail);
+            }
+
+        } catch (Exception e) {
+            // Fallback to basic recommendation logic if AI service fails
+            logger.warn("AI recommendation service failed for user: {}. Falling back to basic recommendations. Error: {}",
+                       userEmail, e.getMessage());
+
+            recommendations = getFallbackRecommendations(workerProfile, limit);
+            recommendationReason = "Basic recommendations based on your location and profile (AI service unavailable)";
+        }
+
+        return JobRecommendationsDto.builder()
+                .recommendations(recommendations)
+                .totalCount(recommendations.size())
+                .recommendationReason(recommendationReason)
+                .build();
+    }
+
+    /**
+     * Fallback recommendation method when AI service is unavailable
+     */
+    private List<JobListingDto> getFallbackRecommendations(WorkerProfile workerProfile, int limit) {
+        logger.info("Using fallback recommendation logic for worker profile: {}", workerProfile.getId());
+
+        // Get all open jobs
         List<JobPosting> openJobs = jobPostingRepository.findByStatus(JobStatus.OPEN);
 
         // Filter jobs based on worker location if available
@@ -119,15 +171,9 @@ public class DashboardServiceImpl implements DashboardService {
                 .limit(limit)
                 .collect(Collectors.toList());
 
-        List<JobListingDto> jobDtos = filteredJobs.stream()
+        return filteredJobs.stream()
                 .map(this::convertToJobListingDto)
                 .collect(Collectors.toList());
-
-        return JobRecommendationsDto.builder()
-                .recommendations(jobDtos)
-                .totalCount(jobDtos.size())
-                .recommendationReason("Based on your location and profile")
-                .build();
     }
 
     @Override

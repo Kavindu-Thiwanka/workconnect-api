@@ -25,23 +25,17 @@ public class AdminServiceImpl implements AdminService {
     private final JobPostingRepository jobPostingRepository;
     private final JobApplicationRepository jobApplicationRepository;
     private final ReviewRepository reviewRepository;
-    private final WorkerProfileRepository workerProfileRepository;
-    private final EmployerProfileRepository employerProfileRepository;
     private final PasswordEncoder passwordEncoder;
 
     public AdminServiceImpl(UserRepository userRepository,
                            JobPostingRepository jobPostingRepository,
                            JobApplicationRepository jobApplicationRepository,
                            ReviewRepository reviewRepository,
-                           WorkerProfileRepository workerProfileRepository,
-                           EmployerProfileRepository employerProfileRepository,
                            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.jobPostingRepository = jobPostingRepository;
         this.jobApplicationRepository = jobApplicationRepository;
         this.reviewRepository = reviewRepository;
-        this.workerProfileRepository = workerProfileRepository;
-        this.employerProfileRepository = employerProfileRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
